@@ -56,6 +56,9 @@ export function setupShotScene(world, scene) {
     if (world.delivered < 4) world.delivered = 7;
     world.oxygen = Math.max(world.oxygen, 68);
     world.gameOver = false;
+    // Lift the diver into open water so the play frame shows the swimming clearly.
+    world.diver.y = 330; world.diver.vy = 0; world.diver.vx = 180; world.diver.stunTimer = 0;
+    world.cameraX = Math.max(0, Math.min(3800 - 1280, world.diver.x - 460));
     return 'playing';
   }
   if (scene === 'feature') {

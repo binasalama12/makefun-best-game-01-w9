@@ -37,7 +37,7 @@ function drawTitleScreen() {
   ctx.restore();
   drawCenterPanel(ctx, [
     { text: 'Swim with Arrow Keys or WASD — smooth 8-way diving', size: 20 },
-    { text: 'Take pearls from OPEN clams, carry many at once for a CHAIN BONUS', size: 20 },
+    { text: 'Take pearls from OPEN clams — carry many for a CHAIN BONUS', size: 20 },
     { text: 'Deliver them to the big Mother Clam at the left of the reef', size: 20 },
     { text: 'Jellyfish sting your pearls loose · urchins bite · currents push you', size: 20, color: '#ffb3c2' },
     { text: 'Oxygen always drains — catch rising bubbles to refill it', size: 20, color: '#aef2c0' },

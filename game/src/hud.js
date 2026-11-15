@@ -42,7 +42,7 @@ export function drawHud(ctx, world, muted) {
 export function drawCenterPanel(ctx, lines, accent) {
   ctx.save(); ctx.textAlign = 'center';
   ctx.fillStyle = 'rgba(4,26,36,0.72)';
-  const w = 660; const h = 64 + lines.length * 34;
+  const w = 760; const h = 64 + lines.length * 34;
   ctx.beginPath(); ctx.roundRect((1280 - w) / 2, 800 / 2 - h / 2 + 60, w, h, 20); ctx.fill();
   ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.stroke();
   lines.forEach((line, i) => {

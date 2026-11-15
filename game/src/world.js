@@ -76,7 +76,7 @@ function depositPearls(world) {
   const gained = n * PEARL_SCORE + (n - 1) * CHAIN_BONUS_PER_EXTRA_PEARL * Math.max(1, n - 1);
   world.score += gained; world.delivered += n; world.deposits += 1;
   world.bestChain = Math.max(world.bestChain, n);
-  world.lastDeposit = { count: n, gained, timer: 2.2, x: world.motherClam.x, y: world.motherClam.y - 90 };
+  world.lastDeposit = { count: n, gained, timer: 2.2, x: world.motherClam.x, y: world.motherClam.y - 168 };
   world.diver.carrying = 0; world.flashTimer = 0.35;
   burstParticles(world, world.motherClam.x, world.motherClam.y - 40, '#ffe9a8', 26);
   burstParticles(world, world.motherClam.x, world.motherClam.y - 40, '#ffffff', 14);
