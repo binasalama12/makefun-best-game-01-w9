@@ -28,20 +28,27 @@ function startNewGame() {
 function drawTitleScreen() {
   renderWorld(ctx, world);
   ctx.save(); ctx.textAlign = 'center';
-  ctx.fillStyle = 'rgba(4,26,36,0.45)'; ctx.fillRect(0, 120, VIEW_WIDTH, 210);
-  ctx.font = 'bold 84px system-ui, sans-serif';
-  ctx.fillStyle = '#7fe7ff'; ctx.strokeStyle = 'rgba(3,30,42,0.9)'; ctx.lineWidth = 10;
-  ctx.strokeText('CORAL COURIER', VIEW_WIDTH / 2, 225); ctx.fillText('CORAL COURIER', VIEW_WIDTH / 2, 225);
-  ctx.font = 'bold 26px system-ui, sans-serif'; ctx.fillStyle = '#ffe9a8';
-  ctx.fillText('Dive the reef · Gather pearls · Feed the Mother Clam', VIEW_WIDTH / 2, 272);
+  ctx.fillStyle = 'rgba(4,26,36,0.42)'; ctx.fillRect(0, 118, VIEW_WIDTH, 214);
+  // pearl dots flanking the title
+  for (const px of [VIEW_WIDTH / 2 - 392, VIEW_WIDTH / 2 + 392]) {
+    ctx.fillStyle = '#fffdf4'; ctx.beginPath(); ctx.arc(px, 196, 11, 0, 7); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(px - 3.5, 192.5, 4, 0, 7); ctx.fill();
+  }
+  ctx.font = 'bold 86px system-ui, sans-serif';
+  ctx.fillStyle = '#7fe7ff'; ctx.strokeStyle = 'rgba(3,30,42,0.9)'; ctx.lineWidth = 11;
+  ctx.strokeText('CORAL COURIER', VIEW_WIDTH / 2, 226); ctx.fillText('CORAL COURIER', VIEW_WIDTH / 2, 226);
+  ctx.font = 'bold 27px system-ui, sans-serif'; ctx.fillStyle = '#ffe9a8';
+  ctx.fillText('Dive the reef · Gather pearls · Feed the Mother Clam', VIEW_WIDTH / 2, 276);
+  ctx.font = 'bold 17px system-ui, sans-serif'; ctx.fillStyle = '#aef2c0';
+  ctx.fillText('🐢  a living reef: fish schools · turtles · rays · jellyfish  🪼', VIEW_WIDTH / 2, 308);
   ctx.restore();
   drawCenterPanel(ctx, [
-    { text: 'Swim with Arrow Keys or WASD — smooth 8-way diving', size: 20 },
+    { text: 'Swim: Arrow Keys / WASD — or HOLD THE MOUSE to steer', size: 20 },
     { text: 'Take pearls from OPEN clams — carry many for a CHAIN BONUS', size: 20 },
     { text: 'Deliver them to the big Mother Clam at the left of the reef', size: 20 },
     { text: 'Jellyfish sting your pearls loose · urchins bite · currents push you', size: 20, color: '#ffb3c2' },
     { text: 'Oxygen always drains — catch rising bubbles to refill it', size: 20, color: '#aef2c0' },
-    { text: 'Press Enter to dive', size: 26, bold: true, color: '#ffd23f' },
+    { text: 'Press Enter or Click to dive', size: 26, bold: true, color: '#ffd23f' },
   ], '#7fe7ff');
 }
 
@@ -60,11 +67,13 @@ function drawGameOverScreen() {
   ctx.font = 'bold 64px system-ui, sans-serif'; ctx.fillStyle = '#ff8fa8';
   ctx.fillText('OUT OF OXYGEN', VIEW_WIDTH / 2, 300);
   ctx.restore();
+  const rating = world.score >= 400 ? '★★★★★  REEF LEGEND!' : world.score >= 260 ? '★★★★☆  Master Courier' : world.score >= 140 ? '★★★☆☆  Pearl Runner' : world.score >= 60 ? '★★☆☆☆  Reef Rookie' : '★☆☆☆☆  First Dive';
   drawCenterPanel(ctx, [
     { text: `Pearls delivered: ${world.delivered}`, size: 26, bold: true, color: '#ffe9a8' },
     { text: `Final score: ${world.score}`, size: 26, bold: true },
     { text: `Biggest chain deposit: ${world.bestChain} pearls · ${world.deposits} deliveries`, size: 20 },
-    { text: 'Press R to restart', size: 26, bold: true, color: '#ffd23f' },
+    { text: rating, size: 22, bold: true, color: '#ffd23f' },
+    { text: 'Press R or Click to dive again', size: 24, bold: true, color: '#ffd23f' },
   ], '#ff8fa8');
 }
 
@@ -89,8 +98,9 @@ function drainWorldEvents() {
 }
 
 function handleActionKeys() {
-  if (input.consumePress('Enter') && gameState === 'title') startNewGame();
-  if (input.consumePress('KeyR') && gameState === 'over') startNewGame();
+  const clicked = input.consumePress('Pointer');
+  if ((input.consumePress('Enter') || clicked) && gameState === 'title') startNewGame();
+  if ((input.consumePress('KeyR') || clicked) && gameState === 'over') startNewGame();
   if (input.consumePress('KeyP') && (gameState === 'playing' || gameState === 'paused')) gameState = gameState === 'playing' ? 'paused' : 'playing';
   if (input.consumePress('KeyM')) audio.toggleMute();
   input.clearPresses();
@@ -105,7 +115,12 @@ function animationFrame(timestamp) {
   if (gameState === 'playing') {
     accumulator += elapsed;
     while (accumulator >= FIXED_DT) {
-      stepWorld(world, { x: input.axisX(), y: input.axisY() }, FIXED_DT);
+      let move = { x: input.axisX(), y: input.axisY() };
+      if (move.x === 0 && move.y === 0) {
+        const p = input.pointerAxis(world.diver.x - world.cameraX, world.diver.y);
+        if (p) move = p;
+      }
+      stepWorld(world, move, FIXED_DT);
       accumulator -= FIXED_DT;
     }
     drainWorldEvents();

@@ -5,6 +5,7 @@ import {
   OXYGEN_MAX, OXYGEN_DRAIN_PER_SECOND, OXYGEN_PER_BUBBLE, PEARL_SCORE,
   CHAIN_BONUS_PER_EXTRA_PEARL, STUN_SECONDS, CURRENT_CHANGE_SECONDS,
   CLAM_COUNT, JELLY_COUNT, URCHIN_COUNT, VENT_COUNT, PALETTE,
+  CORAL_COUNT, FISH_SCHOOL_COUNT, TURTLE_COUNT, RAY_COUNT, STARFISH_COUNT, FISH_COLORS,
 } from './config.js';
 
 export function createWorld(seed) {
@@ -35,13 +36,33 @@ export function createWorld(seed) {
   const vents = [];
   for (let i = 0; i < VENT_COUNT; i++) vents.push({ x: 360 + i * ((WORLD_WIDTH - 600) / VENT_COUNT) + randomRange(rng, -70, 70), y: FLOOR_Y - 8, timer: rng() * 2 });
   const corals = [];
-  for (let i = 0; i < 90; i++) corals.push({ x: rng() * WORLD_WIDTH, y: FLOOR_Y + randomRange(rng, -4, 10), h: randomRange(rng, 22, 74), kind: Math.floor(rng() * 3), color: pickFrom(rng, [PALETTE.coralPink, PALETTE.coralOrange, PALETTE.coralPurple]), lean: randomRange(rng, -0.25, 0.25) });
+  for (let i = 0; i < CORAL_COUNT; i++) corals.push({ x: rng() * WORLD_WIDTH, y: FLOOR_Y + randomRange(rng, -6, 10), h: randomRange(rng, 26, 96), kind: Math.floor(rng() * 5), color: pickFrom(rng, [PALETTE.coralPink, PALETTE.coralOrange, PALETTE.coralPurple, '#ff5d8f', '#ffa62b']), lean: randomRange(rng, -0.25, 0.25) });
   const plankton = [];
-  for (let i = 0; i < 130; i++) plankton.push({ x: rng() * WORLD_WIDTH, y: randomRange(rng, 70, FLOOR_Y - 30), phase: rng() * 6.28, size: randomRange(rng, 1, 2.6) });
+  for (let i = 0; i < 190; i++) plankton.push({ x: rng() * WORLD_WIDTH, y: randomRange(rng, 70, FLOOR_Y - 30), phase: rng() * 6.28, size: randomRange(rng, 1, 2.8) });
   const rocks = [];
-  for (let i = 0; i < 40; i++) rocks.push({ x: rng() * WORLD_WIDTH, y: FLOOR_Y + randomRange(rng, 2, 26), w: randomRange(rng, 24, 80), h: randomRange(rng, 10, 26) });
+  for (let i = 0; i < 52; i++) rocks.push({ x: rng() * WORLD_WIDTH, y: FLOOR_Y + randomRange(rng, 2, 26), w: randomRange(rng, 24, 92), h: randomRange(rng, 10, 30) });
+  // Distant background silhouettes (parallax layer): rock arches and kelp stands.
+  const bgFeatures = [];
+  for (let i = 0; i < 15; i++) bgFeatures.push({ x: rng() * WORLD_WIDTH * 0.62, w: randomRange(rng, 130, 260), h: randomRange(rng, 120, 300), kind: Math.floor(rng() * 2), phase: rng() * 6.28 });
+  const starfish = [];
+  for (let i = 0; i < STARFISH_COUNT; i++) starfish.push({ x: rng() * WORLD_WIDTH, y: FLOOR_Y + randomRange(rng, 16, 52), size: randomRange(rng, 9, 17), rot: rng() * 6.28, color: pickFrom(rng, ['#ff9e57', '#ff7d9c', '#ffb340']) });
+  const shells = [];
+  for (let i = 0; i < 30; i++) shells.push({ x: rng() * WORLD_WIDTH, y: FLOOR_Y + randomRange(rng, 14, 58), size: randomRange(rng, 5, 10), color: pickFrom(rng, ['#f7a8c4', '#fff3d6', '#c9a8ff']) });
+  // Schools of fish: a leader point plus per-fish offsets, all seeded.
+  const fishSchools = [];
+  for (let s = 0; s < FISH_SCHOOL_COUNT; s++) {
+    const count = 7 + Math.floor(rng() * 5);
+    const fish = [];
+    for (let i = 0; i < count; i++) fish.push({ dx: -Math.floor(i / 3) * 34 - rng() * 16, dy: (i % 3 - 1) * 26 + randomRange(rng, -8, 8), size: randomRange(rng, 11, 17), phase: rng() * 6.28 });
+    fishSchools.push({ x: rng() * WORLD_WIDTH, y: randomRange(rng, 130, 520), speed: randomRange(rng, 26, 52) * (rng() < 0.3 ? -1 : 1), color: FISH_COLORS[s % FISH_COLORS.length], color2: pickFrom(rng, FISH_COLORS), phase: rng() * 6.28, fish });
+  }
+  const turtles = [];
+  for (let i = 0; i < TURTLE_COUNT; i++) turtles.push({ x: rng() * WORLD_WIDTH, y: randomRange(rng, 150, 420), speed: randomRange(rng, 14, 22), phase: rng() * 6.28, scale: randomRange(rng, 0.85, 1.15) });
+  const rays = [];
+  for (let i = 0; i < RAY_COUNT; i++) rays.push({ x: rng() * WORLD_WIDTH, y: randomRange(rng, 120, 300), speed: randomRange(rng, 18, 28), phase: rng() * 6.28, scale: randomRange(rng, 0.9, 1.3) });
   return {
     seed, rng, time: 0, clams, jellies, urchins, vents, corals, plankton, rocks,
+    bgFeatures, starfish, shells, fishSchools, turtles, rays, decoBubbles: [], decoTimer: 0, breathTimer: 0,
     motherClam: { x: 190, y: FLOOR_Y - 10, radius: 58 },
     diver: { x: 260, y: 380, vx: 0, vy: 0, facing: 1, carrying: 0, stunTimer: 0, invulnTimer: 0, trailTimer: 0 },
     bubbles: [], loosePearls: [], particles: [], trail: [],
@@ -193,6 +214,40 @@ export function stepWorld(world, input, dt) {
 
   for (const p of world.particles) { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 60 * dt; }
   world.particles = world.particles.filter((p) => p.life > 0);
+
+  // Sea life: fish schools cruise the reef, turtles paddle, rays glide.
+  for (const s of world.fishSchools) {
+    s.x += (s.speed + world.currentDir * 6) * dt;
+    if (s.speed > 0 && s.x - 320 > WORLD_WIDTH) s.x = -80;
+    if (s.speed < 0 && s.x + 320 < 0) s.x = WORLD_WIDTH + 80;
+    s.y += Math.sin(world.time * 0.6 + s.phase) * 7 * dt;
+  }
+  for (const t of world.turtles) {
+    t.x += t.speed * dt;
+    if (t.x - 160 > WORLD_WIDTH) t.x = -140;
+    t.y += Math.sin(world.time * 0.7 + t.phase) * 9 * dt;
+  }
+  for (const r of world.rays) {
+    r.x += r.speed * dt;
+    if (r.x - 220 > WORLD_WIDTH) r.x = -200;
+    r.y += Math.sin(world.time * 0.5 + r.phase) * 11 * dt;
+  }
+
+  // Decorative bubble streams from vents and coral, plus the diver's breath.
+  world.decoTimer -= dt;
+  if (world.decoTimer <= 0) {
+    world.decoTimer = 0.14;
+    const vent = world.vents[Math.floor(world.rng() * world.vents.length)];
+    world.decoBubbles.push({ x: vent.x + randomRange(world.rng, -8, 8), y: vent.y - 6, vy: -randomRange(world.rng, 60, 105), wobble: world.rng() * 6.28, radius: randomRange(world.rng, 2.5, 6) });
+  }
+  world.breathTimer -= dt;
+  if (world.breathTimer <= 0) {
+    world.breathTimer = 0.55;
+    world.decoBubbles.push({ x: d.x + d.facing * 24, y: d.y - 8, vy: -randomRange(world.rng, 45, 70), wobble: world.rng() * 6.28, radius: randomRange(world.rng, 2, 4.5) });
+  }
+  for (const b of world.decoBubbles) { b.y += b.vy * dt; b.x += Math.sin(world.time * 3.4 + b.wobble) * 16 * dt; }
+  world.decoBubbles = world.decoBubbles.filter((b) => b.y > SURFACE_Y + 6);
+  if (world.decoBubbles.length > 240) world.decoBubbles.splice(0, world.decoBubbles.length - 240);
 
   // Camera follows the diver, clamped to the reef.
   const targetCam = Math.max(0, Math.min(WORLD_WIDTH - 1280, d.x - 460));

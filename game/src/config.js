@@ -20,7 +20,14 @@ export const CLAM_COUNT = 16;
 export const JELLY_COUNT = 9;
 export const URCHIN_COUNT = 13;
 export const VENT_COUNT = 7;
+export const CORAL_COUNT = 170;
+export const FISH_SCHOOL_COUNT = 6;
+export const TURTLE_COUNT = 2;
+export const RAY_COUNT = 2;
+export const STARFISH_COUNT = 26;
 export const PALETTE = {
-  deepTop: '#0b4f63', deepBottom: '#06222e', sand: '#e8d8a8', sandDark: '#cbb37e',
+  deepTop: '#0e6a86', deepBottom: '#052630', sand: '#eedcae', sandDark: '#cbb37e',
   coralPink: '#ff7d9c', coralOrange: '#ff9e57', coralPurple: '#b388ff', seaweed: '#2fae72',
+  tealGlow: '#3fd9c0', gold: '#ffd23f',
 };
+export const FISH_COLORS = ['#ffb340', '#ff6b6b', '#ffd93b', '#4dd0e1', '#ff8ac2', '#9be15d'];
