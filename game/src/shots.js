@@ -80,14 +80,14 @@ export function setupShotScene(world, scene) {
   if (scene === 'title') {
     simulateAutopilot(world, 40);
     world.cameraX = 0;
-    // The courier hovers over the reef in front of the Mother Clam, satchel full.
-    world.diver.x = 395; world.diver.y = 598; world.diver.vx = -60; world.diver.vy = 0;
+    // The courier hovers over the reef below the panel, satchel full, near home.
+    world.diver.x = 430; world.diver.y = 658; world.diver.vx = -60; world.diver.vy = 0;
     world.diver.facing = -1; world.diver.carrying = 4; world.diver.stunTimer = 0;
     world.delivered = 3;
     stageSchool(world, 0, 905, 96);
-    stageSchool(world, 3, 240, 428);
+    stageSchool(world, 3, 905, 648);
     stageTurtle(world, 0, 1062, 92);
-    stageRay(world, 0, 620, 452);
+    stageRay(world, 0, 250, 84);
     stageJelly(world, 0, 1135, 470);
     stageBubbleColumn(world, 700, 6, 470, 690);
     return 'title';
@@ -127,7 +127,7 @@ export function setupShotScene(world, scene) {
     world.cameraX = 0;
     // Pull the courier clear of the shell so the delivery hero is fully visible,
     // facing home with the deposit burst and banner around the Mother Clam.
-    world.diver.x = world.motherClam.x + 185; world.diver.y = world.motherClam.y - 128;
+    world.diver.x = world.motherClam.x + 282; world.diver.y = world.motherClam.y - 190;
     world.diver.vx = -40; world.diver.vy = 0; world.diver.facing = -1; world.diver.stunTimer = 0;
     world.flashTimer = 0.35;
     if (world.lastDeposit) world.lastDeposit.timer = 2.2;

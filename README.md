@@ -15,17 +15,21 @@ whole dive — catch the air bubbles rising from coral vents to stay alive. When
 the oxygen runs out, the dive ends and your delivered pearls and score are shown.
 
 Features: smooth 8-way swimming with light inertia, a deterministic seeded reef
-(mulberry32), periodic currents with a HUD indicator, bubble-trail and deposit
-particles, sparkling open clams, plankton and slanted sun rays, WebAudio bubble /
-pearl / sting sounds, and staged screenshot modes (`?shot=title|play|feature|end&seed=N`)
-that run a fixed-step autopilot diver.
+(mulberry32), a living reef — six fish schools, sea turtles, manta rays, anemones,
+tube sponges, starfish, layered parallax silhouettes and sand caustics — periodic
+currents with a HUD indicator, a Mother-Clam direction arrow and reef progress
+track while carrying, bubble streams and deposit sparkle bursts, sparkling open
+clams, plankton and slanted sun rays, WebAudio bubble / pearl / sting sounds, and
+staged screenshot modes (`?shot=title|play|feature|end&seed=N`) that run a
+fixed-step autopilot diver.
 
 ## Controls
 
 - **Arrow keys / WASD** — swim (8 directions)
-- **Enter** — start from the title screen
+- **Mouse (hold)** — swim toward the pointer
+- **Enter / Click** — start from the title screen
 - **P** — pause / resume
-- **R** — restart from the results screen
+- **R / Click** — restart from the results screen
 - **M** — mute / unmute sound
 
 ## How to run

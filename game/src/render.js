@@ -309,15 +309,15 @@ function drawDiver(ctx, world) {
 function drawForeground(ctx, world) {
   // Dark near-camera seaweed/coral silhouettes along the bottom edge (parallax 1.12).
   const cam = world.cameraX * 1.12;
-  ctx.save(); ctx.fillStyle = 'rgba(4,32,42,0.66)'; ctx.strokeStyle = 'rgba(4,32,42,0.66)';
+  ctx.save(); ctx.fillStyle = 'rgba(4,32,42,0.5)'; ctx.strokeStyle = 'rgba(4,32,42,0.5)';
   for (let i = 0; i < 9; i++) {
     const x = ((i * 211 - cam) % (VIEW_WIDTH + 180) + VIEW_WIDTH + 180) % (VIEW_WIDTH + 180) - 90;
     const h = 54 + (i % 4) * 22;
-    ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.lineWidth = 6.5; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(x, VIEW_HEIGHT + 6);
     ctx.quadraticCurveTo(x + Math.sin(world.time + i * 2) * 10, VIEW_HEIGHT - h * 0.55, x + Math.sin(world.time * 1.2 + i) * 15, VIEW_HEIGHT - h);
     ctx.stroke();
-    ctx.beginPath(); ctx.arc(x + Math.sin(world.time * 1.2 + i) * 15, VIEW_HEIGHT - h, 5, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + Math.sin(world.time * 1.2 + i) * 15, VIEW_HEIGHT - h, 3.6, 0, 7); ctx.fill();
     if (i % 3 === 0) { // foreground coral branch silhouette
       ctx.lineWidth = 7;
       ctx.beginPath(); ctx.moveTo(x + 34, VIEW_HEIGHT + 6); ctx.lineTo(x + 34, VIEW_HEIGHT - h * 0.62);
@@ -333,7 +333,7 @@ export function renderWorld(ctx, world) {
   drawSeaBackground(ctx, world);
   drawBackgroundSilhouettes(ctx, world);
   const cam = world.cameraX;
-  for (const r of world.rays) { const x = r.x - cam * 0.8; const sx = ((x % (WORLD_WIDTH + 500)) + WORLD_WIDTH + 500) % (WORLD_WIDTH + 500) - 250; drawRay(ctx, r, sx, world.time); }
+  for (const r of world.rays) { const sx = r.x - cam; if (sx > -240 && sx < VIEW_WIDTH + 240) drawRay(ctx, r, sx, world.time); }
   drawSandAndRocks(ctx, world);
   drawCorals(ctx, world);
   // vents with bubble columns
