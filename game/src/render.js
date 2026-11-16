@@ -261,8 +261,11 @@ function drawUrchin(ctx, u, sx) {
 function drawDiver(ctx, world) {
   const d = world.diver; const cam = world.cameraX;
   const x = d.x - cam; const y = d.y;
+  // Staged shot frames may flag a hero scale so the courier reads at dossier
+  // thumbnail size; normal play and the title/end frames leave it unset (= 1).
+  const hero = world.heroScale || 1;
   const blink = d.invulnTimer > 0 && Math.floor(world.time * 12) % 2 === 0;
-  ctx.save(); ctx.translate(x, y); ctx.scale(d.facing * 1.32, 1.32);
+  ctx.save(); ctx.translate(x, y); ctx.scale(d.facing * 1.32 * hero, 1.32 * hero);
   if (blink) ctx.globalAlpha = 0.45;
   const kick = Math.sin(world.time * 9) * (Math.hypot(d.vx, d.vy) > 30 ? 1 : 0.3);
   // fins
@@ -295,14 +298,14 @@ function drawDiver(ctx, world) {
   ctx.restore();
   // carried pearls spilling over the satchel (screen space, unflipped)
   for (let i = 0; i < Math.min(8, d.carrying); i++) {
-    const px = x - 18 + (i % 4) * 11; const py = y + 24 + Math.floor(i / 4) * 11;
-    ctx.save(); ctx.globalAlpha = 0.35; ctx.fillStyle = '#fffbe8'; ctx.beginPath(); ctx.arc(px, py, 8, 0, 7); ctx.fill(); ctx.restore();
-    ctx.fillStyle = '#fffdf4'; ctx.beginPath(); ctx.arc(px, py, 5, 0, 7); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px - 1.6, py - 1.6, 1.8, 0, 7); ctx.fill();
+    const px = x - 18 * hero + (i % 4) * 11 * hero; const py = y + 24 * hero + Math.floor(i / 4) * 11 * hero;
+    ctx.save(); ctx.globalAlpha = 0.35; ctx.fillStyle = '#fffbe8'; ctx.beginPath(); ctx.arc(px, py, 8 * hero, 0, 7); ctx.fill(); ctx.restore();
+    ctx.fillStyle = '#fffdf4'; ctx.beginPath(); ctx.arc(px, py, 5 * hero, 0, 7); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px - 1.6 * hero, py - 1.6 * hero, 1.8 * hero, 0, 7); ctx.fill();
   }
   if (d.stunTimer > 0) {
     ctx.fillStyle = '#ffe14d'; ctx.font = 'bold 22px system-ui, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('✦ ✦', x, y - 38);
+    ctx.fillText('✦ ✦', x, y - 38 * hero);
   }
 }
 
